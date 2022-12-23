@@ -15,6 +15,7 @@ export class App extends Component  {
     images: [],
     imgTotalNumber: 0,
     modalUrl: '',
+    isLoading: false,
   }
 
   submitHandler = (e) => { 
@@ -26,12 +27,12 @@ export class App extends Component  {
     }    
     this.setState(prevState => {
       if (prevState.searchTerm === searchTerm) return;
-      return {searchTerm, page: 1, images: [], imgTotalNumber: 0}
+      return {searchTerm, page: 1, images: [], imgTotalNumber: 0, isLoading: true}
     });    
   }
 
   modalHandler = (e) => { 
-    console.log(e.target.dataset.modal);
+    // console.log(e.target.dataset.modal);
     this.setState({ modalUrl: e.target.dataset.modal });
     const listen = window.addEventListener("keydown", (e) => {
       if (e.key === 'Escape') { 
@@ -53,27 +54,27 @@ export class App extends Component  {
   }
 
   componentDidUpdate(_, prevState) { 
-    // console.log(this.state);
+    console.log(this.state.isLoading);
     if (this.state.searchTerm === prevState.searchTerm &&
-      this.state.page === prevState.page) return;
-    // if (this.state.searchTerm !== prevState.searchTerm) {
-    //   this.setState({ images: [], page: 1, imgTotalNumber: 0});
-    //  }
+      this.state.page === prevState.page) return;  
     const { searchTerm, perPage, page } = this.state;
-    // console.log(searchTerm);
+    // this.setState({isLoading: true});    
     getImages(searchTerm, perPage, page)
       .then(data => {
-        // console.log(data);
+        console.log(this.state.isLoading);
         this.setState({ imgTotalNumber: data.totalHits });
         return data.hits;
       })
       .then(images => { 
-      //  console.log(images);
+      console.log(this.state.isLoading);
         this.setState( prevState => ({ images: [...prevState.images, ...images] }));
         if (!images.length) Notiflix.Notify.failure(`No images found!`); 
         // return this.state;
+        this.setState({isLoading : false})
       })
-      // .then(res => console.log(res));  
+      .catch(err => Notiflix.Notify.failure(err.message))
+      // .finally(this.setState({isLoading : false}))
+      // .then(res => console.log(res));    
   }
 
   render() {    

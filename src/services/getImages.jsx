@@ -14,7 +14,8 @@ export async function getImages( searchTerm, perPage, page ) {
         // console.log(response.data);
         return response.data;
     } 
-   catch(err) {
-        console.log(err);
+    catch (err) {
+        console.log(err.message);
+        throw new Error(err.message);
     }  
 }
