@@ -10,8 +10,7 @@ export async function getImages( searchTerm, perPage, page ) {
             per_page: perPage,            
     });  
     try { 
-        const response = await axios.get(`${API_URL}?page=${page}&${config}`);
-        // console.log(response.data);
+        const response = await axios.get(`${API_URL}?page=${page}&${config}`);        
         return response.data;
     } 
     catch (err) {

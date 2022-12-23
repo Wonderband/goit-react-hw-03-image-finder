@@ -32,64 +32,52 @@ export class App extends Component  {
     });    
   }
 
-  modalHandler = (e) => { 
-    // console.log(e.target.dataset.modal);
+  componentDidUpdate(_, prevState) {     
+    if (this.state.searchTerm === prevState.searchTerm &&
+      this.state.page === prevState.page) return;  
+    const { searchTerm, perPage, page } = this.state;    
+    getImages(searchTerm, perPage, page)
+      .then(data => {      
+        this.setState({ imgTotalNumber: data.totalHits });
+        return data.hits;
+      })
+      .then(images => {  
+        if (!images.length) 
+          Notiflix.Notify.failure(`No images found!`);          
+        else
+          this.setState( prevState => ({ images: [...prevState.images, ...images] }));       
+        this.setState({isLoading : false})
+      })
+      .catch(err => Notiflix.Notify.failure(err.message))
+      // .finally(this.setState({isLoading : false}))    - doesnt work, isLoading becomes false before .then???
+  }
+
+  modalHandler = (e) => {     
     this.setState({ modalUrl: e.target.dataset.modal });
     const listen = window.addEventListener("keydown", (e) => {
       if (e.key === 'Escape') { 
         this.setState({ modalUrl: '' });
         window.removeEventListener("keydown", listen);
-      }
-        
+      } 
+    });
+  }
+
+  showModal = () => this.state.modalUrl.length > 0;
   
-  // do something
-});
-  }
-
-  showModal = () => { return this.state.modalUrl.length > 0 }
+  hideModal = () => this.setState({ modalUrl: '' });
   
-  hideModal = () => (this.setState({modalUrl: ''}));
-
-  showNextPage = () => { 
-    this.setState(prevState => ( {page : prevState.page + 1}));
-  }
-
-  componentDidUpdate(_, prevState) { 
-    // console.log(this.state.isLoading);
-    if (this.state.searchTerm === prevState.searchTerm &&
-      this.state.page === prevState.page) return;  
-    const { searchTerm, perPage, page } = this.state;
-    // this.setState({isLoading: true});    
-    getImages(searchTerm, perPage, page)
-      .then(data => {
-      //   console.log(this.state.isLoading);
-        this.setState({ imgTotalNumber: data.totalHits });
-        return data.hits;
-      })
-      .then(images => { 
-      // console.log(this.state.isLoading);
-        this.setState( prevState => ({ images: [...prevState.images, ...images] }));
-        if (!images.length) Notiflix.Notify.failure(`No images found!`); 
-        // return this.state;
-        this.setState({isLoading : false})
-      })
-      .catch(err => Notiflix.Notify.failure(err.message))
-      // .finally(this.setState({isLoading : false}))
-      // .then(res => console.log(res));    
-  }
+  showNextPage = () => this.setState(prevState => ({ page: prevState.page + 1, isLoading: true }));   
 
   render() {    
     return (
       <>
-        <SearchBar submitHandler={this.submitHandler} />
+        <SearchBar submitHandler={this.submitHandler} />        
+        <ImageGallery images={this.state.images} clickHandler={this.modalHandler} />
         <Loader isLoading={this.state.isLoading}/>
-        <ImageGallery images={this.state.images} clickHandler={this.modalHandler } />
         <Button imagesQtt={this.state.imgTotalNumber} page={this.state.page}
           perPage={this.state.perPage} loadMore={this.showNextPage} /> 
-        <Modal imgUrl={this.state.modalUrl} showModal={this.showModal} hideModal={this.hideModal} />
-        
+        <Modal imgUrl={this.state.modalUrl} showModal={this.showModal} hideModal={this.hideModal} />        
       </>
     )    
-  };
-  
+  };  
 };

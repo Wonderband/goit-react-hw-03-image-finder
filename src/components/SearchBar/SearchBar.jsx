@@ -1,11 +1,7 @@
-import { Component } from "react";
-
-export class SearchBar extends Component { 
-    
-    render() {
-        return (
+import PropTypes from "prop-types";
+export const SearchBar = ({ submitHandler }) => (
             <header className="Searchbar">
-            <form className="SearchForm" onSubmit={this.props.submitHandler}>
+            <form className="SearchForm" onSubmit={submitHandler}>
                 <button type="submit" className="SearchForm-button">
                     <span className="SearchForm-button-label">Search</span>
                 </button>
@@ -19,6 +15,8 @@ export class SearchBar extends Component {
                 />
             </form>
             </header>
-        )
-    }    
-}
+)
+
+SearchBar.propTypes = {
+  submitHandler: PropTypes.func.isRequired,  
+};

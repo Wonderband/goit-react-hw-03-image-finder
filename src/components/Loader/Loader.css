@@ -1,9 +1,10 @@
 .lds-spinner {
     color: official;
-    display: inline-block;
+    display: block;
     position: relative;
     width: 80px;
     height: 80px;
+    margin: 0 auto;
 }
 
 .lds-spinner div {
@@ -20,7 +21,7 @@
     width: 6px;
     height: 18px;
     border-radius: 20%;
-    background: rgb(228, 13, 13);
+    background: rgb(8, 8, 8);
 }
 
 .lds-spinner div:nth-child(1) {
