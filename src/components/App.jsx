@@ -5,6 +5,7 @@ import { SearchBar } from './SearchBar/SearchBar';
 import { getImages } from "services/getImages";
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component  { 
 
@@ -54,19 +55,19 @@ export class App extends Component  {
   }
 
   componentDidUpdate(_, prevState) { 
-    console.log(this.state.isLoading);
+    // console.log(this.state.isLoading);
     if (this.state.searchTerm === prevState.searchTerm &&
       this.state.page === prevState.page) return;  
     const { searchTerm, perPage, page } = this.state;
     // this.setState({isLoading: true});    
     getImages(searchTerm, perPage, page)
       .then(data => {
-        console.log(this.state.isLoading);
+      //   console.log(this.state.isLoading);
         this.setState({ imgTotalNumber: data.totalHits });
         return data.hits;
       })
       .then(images => { 
-      console.log(this.state.isLoading);
+      // console.log(this.state.isLoading);
         this.setState( prevState => ({ images: [...prevState.images, ...images] }));
         if (!images.length) Notiflix.Notify.failure(`No images found!`); 
         // return this.state;
@@ -81,10 +82,12 @@ export class App extends Component  {
     return (
       <>
         <SearchBar submitHandler={this.submitHandler} />
+        <Loader isLoading={this.state.isLoading}/>
         <ImageGallery images={this.state.images} clickHandler={this.modalHandler } />
         <Button imagesQtt={this.state.imgTotalNumber} page={this.state.page}
           perPage={this.state.perPage} loadMore={this.showNextPage} /> 
-        <Modal imgUrl={this.state.modalUrl} showModal={this.showModal} hideModal={ this.hideModal} />
+        <Modal imgUrl={this.state.modalUrl} showModal={this.showModal} hideModal={this.hideModal} />
+        
       </>
     )    
   };
