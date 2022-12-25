@@ -37,30 +37,24 @@ export class App extends Component  {
       this.state.page === prevState.page) return;  
     const { searchTerm, perPage, page } = this.state;    
     getImages(searchTerm, perPage, page)
-      .then(data => {      
+      .then(data => {
         this.setState({ imgTotalNumber: data.totalHits });
         return data.hits;
       })
-      .then(images => {  
-        if (!images.length) 
-          Notiflix.Notify.failure(`No images found!`);          
+      .then(images => {
+        if (!images.length) {
+          Notiflix.Notify.failure(`No images found!`);
+          this.setState({ isLoading: false });
+        }
         else
-          this.setState( prevState => ({ images: [...prevState.images, ...images] }));       
-        this.setState({isLoading : false})
+          this.setState(prevState => ({ images: [...prevState.images, ...images], isLoading: false }));
+        // this.setState({ isLoading: false })
       })
       .catch(err => Notiflix.Notify.failure(err.message))
-      // .finally(this.setState({isLoading : false}))    - doesnt work, isLoading becomes false before .then???
+      // .finally(this.setState({ isLoading: false }));  
   }
 
-  modalHandler = (e) => {     
-    this.setState({ modalUrl: e.target.dataset.modal });
-    const listen = window.addEventListener("keydown", (e) => {
-      if (e.key === 'Escape') { 
-        this.setState({ modalUrl: '' });
-        window.removeEventListener("keydown", listen);
-      } 
-    });
-  }
+  modalHandler = (e) => this.setState({ modalUrl: e.target.dataset.modal });      
 
   showModal = () => this.state.modalUrl.length > 0;
   
@@ -76,7 +70,7 @@ export class App extends Component  {
         <Loader isLoading={this.state.isLoading}/>
         <Button imagesQtt={this.state.imgTotalNumber} page={this.state.page}
           perPage={this.state.perPage} loadMore={this.showNextPage} /> 
-        <Modal imgUrl={this.state.modalUrl} showModal={this.showModal} hideModal={this.hideModal} />        
+        {this.showModal() && <Modal imgUrl={this.state.modalUrl} hideModal={this.hideModal} />}       
       </>
     )    
   };  
