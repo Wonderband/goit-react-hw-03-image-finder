@@ -42,15 +42,13 @@ export class App extends Component  {
         return data.hits;
       })
       .then(images => {
-        if (!images.length) {
-          Notiflix.Notify.failure(`No images found!`);
-          this.setState({ isLoading: false }); // if comment this out...
-        }
+        if (!images.length) 
+          Notiflix.Notify.failure(`No images found!`);        
         else
-          this.setState(prevState => ({ images: [...prevState.images, ...images], isLoading: false }));        
+          this.setState(prevState => ({ images: [...prevState.images, ...images]}));        
       })
       .catch(err => Notiflix.Notify.failure(err.message))
-      // .finally(this.setState({ isLoading: false }));  ... and uncomment this - spinner never shows
+      .finally(() => this.setState({ isLoading: false }));
   }
 
   modalHandler = (e) => this.setState({ modalUrl: e.target.dataset.modal });      
